@@ -1,0 +1,105 @@
+<meta name="dash-one-writer">
+<style>
+.mb-wrap{font-family:var(--font-anthropic-sans);color:var(--color-fg);font-size:var(--cds-font-size-body);display:flex;flex-direction:column;gap:var(--cds-gap-md);max-width:980px;margin:0 auto}
+.mb-title{font-weight:650;font-size:var(--cds-font-size-heading);letter-spacing:-.01em;margin:0 0 6px}
+.mb-lede{margin:0;line-height:1.45;color:var(--color-fg-muted);font-size:var(--cds-font-size-caption)}
+.mb-lede b{color:var(--color-fg);font-weight:600}
+.mb-period{display:flex;align-items:center;flex-wrap:wrap;gap:var(--cds-gap-sm);color:var(--color-fg-muted);font-size:var(--cds-font-size-caption)}
+.mb-period select,.mb-sel{min-height:40px;font-size:16px}
+.mb-tabs{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:6px 0;background:var(--color-bg)}
+.mb-tabs::-webkit-scrollbar{display:none}
+.mb-tab{flex:0 0 auto;font:inherit;font-size:14px;font-weight:550;background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:999px;padding:9px 14px;color:var(--color-fg-muted);cursor:pointer;min-height:40px}
+.mb-tab.mb-on{color:var(--color-panel);background:var(--color-fg);border-color:var(--color-fg)}
+.mb-panel{display:flex;flex-direction:column;gap:var(--cds-gap-md)}
+.mb-panel[hidden]{display:none}
+.mb-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.mb-card{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:12px;padding:12px;min-width:0}
+.mb-cl{color:var(--color-fg-muted);font-size:12px;font-weight:550}
+.mb-cv{font-weight:650;font-size:22px;letter-spacing:-.01em;font-variant-numeric:tabular-nums;margin:4px 0 2px;white-space:nowrap}
+.mb-cs{color:var(--color-fg-muted);font-size:11.5px;line-height:1.35;font-variant-numeric:tabular-nums}
+.mb-h{font-size:15px;font-weight:650;margin:0 0 4px;display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.mb-sub{font-weight:400;color:var(--color-fg-muted);font-size:12px}
+.mb-note{margin:0 0 10px;color:var(--color-fg-muted);font-size:12px;line-height:1.4}
+.mb-chart{min-height:200px}
+.mb-box{position:relative}
+.mb-legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--color-fg-muted);margin-bottom:6px}
+.mb-key{display:inline-flex;align-items:center;gap:5px}
+.mb-key i{width:9px;height:9px;border-radius:2px;display:inline-block}
+.mb-axis text{fill:var(--cds-text-secondary);font-size:10.5px;font-family:var(--font-anthropic-sans)}
+.mb-axis line{stroke:var(--cds-chart-grid)}
+.mb-lbl{fill:var(--cds-text-secondary);font-size:11px;font-variant-numeric:tabular-nums;font-family:var(--font-anthropic-sans)}
+.mb-lbl-fg{fill:var(--color-fg)}
+.mb-tip{position:absolute;pointer-events:none;background:var(--cds-surface-popover);border:1px solid var(--cds-border);box-shadow:var(--cds-shadow-popover);border-radius:8px;padding:8px 10px;font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap;z-index:3}
+.mb-tip[hidden]{display:none}
+.mb-tw{margin:0 -12px -12px;border-radius:0 0 12px 12px;overflow:hidden}
+.mb-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mb-tall{max-height:520px;overflow:auto}
+.mb-table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+.mb-table th{text-align:right;font-weight:550;font-size:11.5px;color:var(--color-fg-muted);padding:7px 12px;border-top:1px solid var(--color-border-line);border-bottom:1px solid var(--color-border-line);position:sticky;top:0;background:var(--color-bg);z-index:1;white-space:nowrap}
+.mb-table th.mb-l{text-align:left}
+.mb-table td{padding:7px 12px;border-bottom:1px solid var(--color-border-line)}
+.mb-table td.mb-n{text-align:right;white-space:nowrap}
+.mb-table td.mb-t{word-break:break-word}
+.mb-table tbody tr:last-child td{border-bottom:0}
+.mb-table td:first-child{font-weight:550}
+.mb-table select{font-size:13px;min-height:32px;max-width:190px}
+.mb-add{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.mb-add input{min-height:36px;font:inherit;font-size:14px;padding:4px 10px;border:1px solid var(--color-border-line);border-radius:8px;background:var(--color-bg);color:var(--color-fg)}
+.mb-btn{font:inherit;font-size:13px;font-weight:550;border:1px solid var(--color-border-line);background:var(--color-panel);color:var(--color-fg);border-radius:8px;padding:7px 12px;cursor:pointer;min-height:36px}
+.mb-warn{color:var(--color-bad);font-size:12px;margin:8px 0 0}
+.mb-details{color:var(--color-fg-muted);font-size:12px;line-height:1.45}
+.mb-details ul{padding-left:18px}
+.mb-details li{margin-bottom:4px}
+[data-dash-source-state=refreshing]{opacity:.5}
+</style>
+<div class="mb-wrap">
+<header id="top">
+<h1 class="mb-title">Sana · Staffing</h1>
+<p class="mb-lede">In this selection <b data-draw="num" data-source="kpis" data-row="0" data-field="hours" data-fmt="int">—</b> hours were clocked by <b data-draw="num" data-source="kpis" data-row="0" data-field="people" data-fmt="int">—</b> people, with <b data-draw="num" data-source="kpis" data-row="0" data-field="ot_hours" data-fmt="int">—</b> of them overtime. Clocks run from January to 17 November 2026.</p>
+</header>
+<div class="mb-period" id="controls"><label for="mb-period">Period</label><select id="mb-period" class="dash-select" data-draw="period" aria-label="Period" data-source="by_month"></select><label for="mb-venue">Side</label><select id="mb-venue" class="dash-select mb-venuesel" aria-label="Sana or Kitchen"><option value="All">Sana and Kitchen</option><option value="Sana">Sana</option><option value="Kitchen">Kitchen</option><option value="Shared">Shared</option></select></div>
+<nav class="mb-tabs" id="tabs" role="tablist"><button type="button" class="mb-tab mb-on" role="tab" aria-selected="true" data-tab="overview">Overview</button><button type="button" class="mb-tab" role="tab" aria-selected="false" data-tab="hours">By hour</button><button type="button" class="mb-tab" role="tab" aria-selected="false" data-tab="people">People</button><button type="button" class="mb-tab" role="tab" aria-selected="false" data-tab="schedule">Schedule</button><button type="button" class="mb-tab" role="tab" aria-selected="false" data-tab="jobs">Jobs</button></nav>
+
+<section class="mb-panel" id="overview" data-panel="overview">
+<div class="mb-cards">
+<div class="mb-card" id="card-hours"><div class="mb-cl">Clocked hours</div><div class="mb-cv" data-draw="num" data-source="kpis" data-row="0" data-field="hours" data-fmt="int">—</div><div class="mb-cs"><span data-draw="num" data-source="kpis" data-row="0" data-field="shifts" data-fmt="int">—</span> shifts, <span data-draw="num" data-source="kpis" data-row="0" data-field="avg_shift" data-fmt="dec">—</span> h each</div></div>
+<div class="mb-card" id="card-people"><div class="mb-cl">People</div><div class="mb-cv" data-draw="num" data-source="kpis" data-row="0" data-field="people" data-fmt="int">—</div><div class="mb-cs">with hours clocked</div></div>
+<div class="mb-card" id="card-sana"><div class="mb-cl">Sana hours</div><div class="mb-cv" data-draw="num" data-source="kpis" data-row="0" data-field="sana_hours" data-fmt="int">—</div><div class="mb-cs">Wellness department</div></div>
+<div class="mb-card" id="card-kitchen"><div class="mb-cl">Kitchen hours</div><div class="mb-cv" data-draw="num" data-source="kpis" data-row="0" data-field="kitchen_hours" data-fmt="int">—</div><div class="mb-cs">FOH and BOH</div></div>
+<div class="mb-card" id="card-ot"><div class="mb-cl">Overtime</div><div class="mb-cv" data-draw="num" data-source="kpis" data-row="0" data-field="ot_hours" data-fmt="int">—</div><div class="mb-cs">daily, weekly and double time</div></div>
+<div class="mb-card" id="card-sched"><div class="mb-cl">Scheduled hours</div><div class="mb-cv" data-draw="num" data-source="kpis" data-row="0" data-field="sched_hours" data-fmt="int">—</div><div class="mb-cs">clocked vs schedule <span data-draw="num" data-source="kpis" data-row="0" data-field="var_pct" data-fmt="spct">—</span></div></div>
+</div>
+<div class="mb-card"><h3 class="mb-h" id="h-month">Clocked hours by month</h3><p class="mb-note">Sana is the Wellness department, Kitchen is FOH and BOH, Shared is Management. Click a month to break its hours down by job in the charts and tables below; click it again to clear. Change the sides on the Jobs tab.</p><div class="mb-chart" id="chart-month" data-draw="chart_month" data-source="by_month">—</div></div>
+<div class="mb-card"><h3 class="mb-h" id="h-job">Hours by job <span class="mb-sub" data-draw="periodname">—</span></h3><div class="mb-chart" id="chart-job" data-draw="chart_job" data-source="by_job">—</div></div>
+<div class="mb-card"><h3 class="mb-h" id="h-jobtable">Jobs <span class="mb-sub" data-draw="periodname">—</span></h3><div class="mb-tw"><div class="mb-scroll"><table class="mb-table" id="table-jobs" data-source="by_job" data-row-key="key"><thead><tr><th class="mb-l" data-field="job">Job</th><th data-field="people" data-fmt="int">People</th><th data-field="hours" data-fmt="dec">Hours</th><th data-field="share" data-fmt="pct">Share</th><th data-field="shifts" data-fmt="int">Shifts</th><th data-field="ot_hours" data-fmt="dec">Overtime</th></tr></thead><tbody data-draw="rows"></tbody></table></div></div></div>
+</section>
+
+<section class="mb-panel" id="hours" data-panel="hours" hidden>
+<div class="mb-card"><h3 class="mb-h" id="h-hourly">People on the clock by hour <span class="mb-sub" data-draw="periodname">—</span></h3><p class="mb-note">Average number of people clocked in during each hour of the day: all clocked hours that fall in that hour, divided by the days covered. Jobs here follow each position's job; a job set for one person on the People tab doesn't move their hours.</p><div class="mb-chart" id="chart-hourly" data-draw="chart_hour" data-source="by_hour">—</div></div>
+</section>
+
+<section class="mb-panel" id="people" data-panel="people" hidden>
+<div class="mb-card"><h3 class="mb-h" id="h-people">People <span class="mb-sub" data-draw="periodname">—</span></h3><p class="mb-note">Pick a job for anyone to set it across all their positions. Leave it on the position job to follow Push.</p><div class="mb-tw"><div class="mb-scroll mb-tall"><table class="mb-table" id="table-people" data-source="by_person" data-row-key="key"><thead><tr><th class="mb-l" data-field="employee">Name</th><th class="mb-l">Job</th><th class="mb-l" data-field="venue">Side</th><th data-field="hours" data-fmt="dec">Hours</th><th data-field="shifts" data-fmt="int">Shifts</th><th data-field="avg_shift" data-fmt="dec">Avg shift</th><th data-field="ot_hours" data-fmt="dec">Overtime</th><th data-field="sched_hours" data-fmt="dec">Scheduled</th></tr></thead><tbody data-draw="rows_people"></tbody></table></div></div><p class="mb-warn mb-unsaved" hidden>That wasn't saved. Only editors can change jobs.</p></div>
+</section>
+
+<section class="mb-panel" id="schedule" data-panel="schedule" hidden>
+<div class="mb-card"><h3 class="mb-h" id="h-sjob">Scheduled vs clocked by job <span class="mb-sub" data-draw="periodname">—</span></h3><p class="mb-note">Scheduled is the Push schedule's hours after breaks; clocked is what people actually clocked. Positive means more clocked than scheduled.</p><div class="mb-tw"><div class="mb-scroll"><table class="mb-table" id="table-sjob" data-source="by_job" data-row-key="key"><thead><tr><th class="mb-l" data-field="job">Job</th><th data-field="sched_hours" data-fmt="dec">Scheduled</th><th data-field="hours" data-fmt="dec">Clocked</th><th data-field="diff" data-fmt="sdec">Difference</th><th data-field="diff_pct" data-fmt="spct">Percent</th></tr></thead><tbody data-draw="rows"></tbody></table></div></div></div>
+<div class="mb-card"><h3 class="mb-h" id="h-smonth">Month by month</h3><div class="mb-tw"><div class="mb-scroll"><table class="mb-table" id="table-smonth" data-source="by_month" data-row-key="key"><thead><tr><th class="mb-l" data-field="month" data-fmt="mon">Month</th><th data-field="sched" data-fmt="dec">Scheduled</th><th data-field="total" data-fmt="dec">Clocked</th><th data-field="sana" data-fmt="dec">Sana</th><th data-field="kitchen" data-fmt="dec">Kitchen</th><th data-field="shared" data-fmt="dec">Shared</th></tr></thead><tbody data-draw="rows"></tbody></table></div></div></div>
+</section>
+
+<section class="mb-panel" id="jobs" data-panel="jobs" hidden>
+<div class="mb-card"><h3 class="mb-h" id="h-positions">Push positions to jobs</h3><p class="mb-note">Each Push position counts as the job you pick here, for everyone in it. Dishwashers are set to Cleaner and Management positions to Manager to start; change any of them.</p><div class="mb-tw"><div class="mb-scroll"><table class="mb-table" id="table-positions" data-source="positions_tbl" data-row-key="key"><thead><tr><th class="mb-l" data-field="position">Push position</th><th class="mb-l" data-field="department">Department</th><th class="mb-l">Job</th><th data-field="people" data-fmt="int">People</th><th data-field="hours" data-fmt="dec">Hours</th></tr></thead><tbody data-draw="rows_positions"></tbody></table></div></div><p class="mb-warn mb-unsaved" hidden>That wasn't saved. Only editors can change jobs.</p></div>
+<div class="mb-card"><h3 class="mb-h" id="h-depts">Departments to Sana or Kitchen</h3><div class="mb-tw"><div class="mb-scroll"><table class="mb-table" id="table-depts" data-source="departments_tbl" data-row-key="key"><thead><tr><th class="mb-l" data-field="department">Push department</th><th class="mb-l">Side</th><th data-field="hours" data-fmt="dec">Hours</th></tr></thead><tbody data-draw="rows_depts"></tbody></table></div></div></div>
+<div class="mb-card"><h3 class="mb-h" id="h-addjob">Add a job</h3><p class="mb-note">New jobs appear in every job dropdown.</p><div class="mb-add"><input id="mb-newjob" type="text" maxlength="30" placeholder="Job name" aria-label="New job name"><button type="button" class="mb-btn" id="mb-addjob">Add job</button></div><p class="mb-warn mb-unsaved" hidden>That wasn't saved. Only editors can change jobs.</p></div>
+</section>
+
+<details class="mb-details" id="notes"><summary>About this data</summary>
+<ul>
+<li>Hours come from Push's Clock Hours (by position) and Schedule Hours reports, pulled 18 Nov 2026 for 1 Jan to 17 Nov. Only reports were run; nothing in Push was changed.</li>
+<li>Hours are after breaks. Hour-of-day figures spread each shift across the hours it covers, so they total about 0.6% less than the shift totals: a few clocks have no clock-out time.</li>
+<li>Dollars aren't here yet: Push's labour reports give hours only, and wages sit in its pay-run reports.</li>
+<li>The hours are a snapshot from the pull date and don't update on their own. Job, side and department settings are saved on this page and shared by everyone who can open it; only editors can change them.</li>
+</ul>
+</details>
+</div>
+<script src="page.js"></script>

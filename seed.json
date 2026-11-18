@@ -1,0 +1,45 @@
+{
+  "jobs": [
+    {"id": "maintenance", "name": "Maintenance", "ord": 1},
+    {"id": "front-desk", "name": "Front desk", "ord": 2},
+    {"id": "server", "name": "Server", "ord": 3},
+    {"id": "bar", "name": "Bar", "ord": 4},
+    {"id": "prep", "name": "Prep", "ord": 5},
+    {"id": "cook", "name": "Cook", "ord": 6},
+    {"id": "cleaner", "name": "Cleaner", "ord": 7},
+    {"id": "manager", "name": "Manager", "ord": 8}
+  ],
+  "venue_map": [
+    {"department": "Wellness", "venue": "Sana"},
+    {"department": "BOH Restaurant", "venue": "Kitchen"},
+    {"department": "FOH Restaurant", "venue": "Kitchen"},
+    {"department": "BOH Salary", "venue": "Kitchen"},
+    {"department": "Management", "venue": "Shared"}
+  ],
+  "job_map": [
+    {"position": "AM Bar and Service Lead", "job": "Bar"},
+    {"position": "PM Bar and Service Lead", "job": "Bar"},
+    {"position": "AM Bartender", "job": "Bar"},
+    {"position": "PM Bartender", "job": "Bar"},
+    {"position": "AM Server", "job": "Server"},
+    {"position": "PM Server", "job": "Server"},
+    {"position": "AM Serving Assistant", "job": "Server"},
+    {"position": "PM Serving Assistant", "job": "Server"},
+    {"position": "AM Dishwasher", "job": "Cleaner"},
+    {"position": "PM Dishwasher", "job": "Cleaner"},
+    {"position": "AM Prep Cook", "job": "Prep"},
+    {"position": "PM Prep Cook", "job": "Prep"},
+    {"position": "AM Line Cook", "job": "Cook"},
+    {"position": "PM Line Cook", "job": "Cook"},
+    {"position": "AM Sous Chef", "job": "Cook"},
+    {"position": "PM Sous Chef", "job": "Cook"},
+    {"position": "AM Head Chef", "job": "Cook"},
+    {"position": "PM Head Chef", "job": "Cook"},
+    {"position": "Head Chef", "job": "Cook"},
+    {"position": "Host", "job": "Front desk"},
+    {"position": "Maintenance", "job": "Maintenance"},
+    {"position": "Manager on Duty-FD", "job": "Manager"},
+    {"position": "Assistant General Manager", "job": "Manager"},
+    {"position": "General Manager", "job": "Manager"}
+  ]
+}
