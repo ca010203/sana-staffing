@@ -1,4 +1,4 @@
-const fmts = {int: d3.format(',.0f'), dec: d3.format(',.1f'), pct: d3.format('.0%'), spct: d3.format('+.1%'), sdec: d3.format('+,.1f')};
+const fmts = {int: d3.format(',.0f'), dec: d3.format(',.1f'), pct: d3.format('.0%'), spct: d3.format('+.1%'), sdec: d3.format('+,.1f'), pct1: d3.format('.1%'), usd: d3.format('$,.0f'), usd2: d3.format('$,.2f')};
 const monF = d3.utcFormat('%b %Y');
 const monLabel = (m) => monF(new Date(m + '-01T00:00:00Z'));
 const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -153,6 +153,85 @@ dash.calc('by_hour', {
   }
 });
 
+dash.calc('rates_tbl', {
+  title: 'Hourly rate and estimated cost by job',
+  description: 'Each job with its hourly rate and its clocked hours for the chosen month and side. Estimated cost is hours times rate.',
+  inputs: ['jobs', 'job_rate', 'by_job', 'staff_enriched', 'sales_month'],
+  fn: (jobs, rates, byJob, staff, sales) => {
+    const mo0 = dash.params().month || 'All';
+    const sm0 = sales.filter((s) => mo0 === 'All' || s.month === mo0);
+    const months0 = new Set(sm0.map((s) => s.month));
+    const net = d3.sum(sm0, (s) => +s.net); const svc = d3.sum(sm0, (s) => +s.pass_net);
+    const sanaH = new Map(d3.rollups(staff.filter((r) => r.venue === 'Sana' && months0.has(r.month)), (v) => d3.sum(v, (r) => r.hours), (r) => r.job));
+    const rm = new Map(rates.map((r) => [r.job, r.rate === '' || r.rate == null ? null : +r.rate]));
+    const hm = new Map(byJob.map((r) => [r.job, r.hours]));
+    const names = jobs.slice().sort((a, b) => (+a.ord || 0) - (+b.ord || 0)).map((j) => j.name);
+    return names.map((j) => {
+      const rate = rm.get(j) ?? null; const hours = hm.get(j) || 0;
+      const sc = rate == null ? null : (sanaH.get(j) || 0) * rate;
+      return {key: j, job: j, rate, hours, cost: rate == null ? null : hours * rate, pct_sales: sc != null && net ? sc / net : null, pct_service: sc != null && svc ? sc / svc : null};
+    });
+  }
+});
+
+dash.calc('cost_summary', {
+  title: 'Estimated cost total',
+  description: 'Total estimated cost across jobs that have a rate, and how many jobs with hours have no rate yet.',
+  inputs: ['rates_tbl'],
+  fn: (rows) => [{key: 'all', cost: d3.sum(rows, (r) => r.cost || 0), unrated: rows.filter((r) => r.hours > 0 && r.rate == null).length}]
+});
+
+dash.calc('cost_month', {
+  title: 'Estimated cost per job per month',
+  description: 'Clocked hours times the hourly rate set for the job, for each month and job, for the chosen side.',
+  inputs: ['staff_enriched', 'job_rate', 'sales_month'],
+  fn: (rows, rates, sales) => {
+    const ve = dash.params().venue || 'All';
+    const rm = new Map(rates.map((r) => [r.job, r.rate === '' || r.rate == null ? null : +r.rate]));
+    const sel = rows.filter((r) => ve === 'All' || r.venue === ve);
+    const sh = new Map(); rows.filter((r) => r.venue === 'Sana').forEach((r) => { const k = r.month + '|' + r.job; sh.set(k, (sh.get(k) || 0) + r.hours); });
+    const sl = new Map(sales.map((s) => [s.month, s]));
+    return d3.rollups(sel, (v) => d3.sum(v, (r) => r.hours), (r) => r.month, (r) => r.job)
+      .flatMap(([m, jobs]) => jobs.map(([j, h]) => {
+        const rate = rm.get(j) ?? null;
+        const sc = rate == null ? null : (sh.get(m + '|' + j) || 0) * rate; const s = sl.get(m);
+        return {key: m + '|' + j, month: m, job: j, hours: h, rate, cost: rate == null ? null : h * rate,
+          pct_sales: sc != null && s && +s.net ? sc / +s.net : null, pct_service: sc != null && s && +s.pass_net ? sc / +s.pass_net : null};
+      }))
+      .filter((r) => r.hours > 0)
+      .sort((a, b) => a.month < b.month ? -1 : a.month > b.month ? 1 : (b.cost || 0) - (a.cost || 0) || b.hours - a.hours);
+  }
+});
+
+dash.calc('sana_month', {
+  title: 'Sana labour cost against sales by month',
+  description: 'Estimated Sana labour cost (clocked Wellness hours times each job rate) against Trybe net sales and day-pass sales for each month.',
+  inputs: ['staff_enriched', 'job_rate', 'sales_month'],
+  fn: (rows, rates, sales) => {
+    const rm = new Map(rates.map((r) => [r.job, r.rate === '' || r.rate == null ? null : +r.rate]));
+    return sales.slice().sort((a, b) => a.month < b.month ? -1 : 1).map((s) => {
+      const v = rows.filter((r) => r.venue === 'Sana' && r.month === s.month);
+      const hours = d3.sum(v, (r) => r.hours);
+      const rated = v.filter((r) => rm.get(r.job) != null);
+      const cost = d3.sum(rated, (r) => r.hours * rm.get(r.job));
+      const has = d3.sum(rated, (r) => r.hours) > 0;
+      return {key: s.month, month: s.month, hours, cost: has ? cost : null, net: +s.net, pass_net: +s.pass_net,
+        pct_sales: has && +s.net ? cost / +s.net : null, pct_service: has && +s.pass_net ? cost / +s.pass_net : null};
+    });
+  }
+});
+
+dash.calc('job_hours', {
+  title: 'People on the clock by hour for the clicked job',
+  description: 'Average people clocked in during each hour of the day for the job picked on the Overview tab, for the chosen month and side.',
+  inputs: ['by_hour'],
+  fn: (rows) => {
+    const job = dash.params().job || '';
+    if (!job) return [];
+    return d3.range(24).map((h) => ({key: h, hour: h, people: d3.sum(rows.filter((r) => r.hour === h && r.job === job), (r) => r.people)}));
+  }
+});
+
 // ---------- helpers for drawings
 function box(el, legend) {
   el.replaceChildren();
@@ -170,6 +249,7 @@ function showTip(t, wrapNode, event, lines) {
   const w = t.node().offsetWidth;
   t.style('left', Math.max(0, Math.min(wrapNode.clientWidth - w, p[0] + 12)) + 'px').style('top', Math.max(0, p[1] - 8) + 'px');
 }
+const toggleJob = (j) => dash.setParams({job: (dash.params().job || '') === j ? '' : j});
 const hourLabel = (h) => ((h % 12) || 12) + (h < 12 ? 'a' : 'p');
 const short = (v) => v >= 1000 ? (v / 1000).toFixed(1) + 'k' : String(Math.round(v));
 
@@ -231,6 +311,8 @@ dash.draw('chart_job', (el) => {
   svg.append('g').selectAll('text').data(rows).join('text').attr('class', 'mb-lbl mb-lbl-fg').attr('x', m.l - 8).attr('y', (d) => y(d.job) + y.bandwidth() / 2).attr('dy', '0.35em').attr('text-anchor', 'end').text((d) => d.job);
   const tip = wrap.append('div').attr('class', 'mb-tip').attr('hidden', '');
   svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', m.l).attr('y', (d) => y(d.job)).attr('height', y.bandwidth()).attr('width', (d) => Math.max(1, x(d.hours) - m.l)).attr('rx', 3).style('fill', dash.colors[0])
+    .style('opacity', (d) => !dash.params().job || dash.params().job === d.job ? 1 : 0.35).style('cursor', 'pointer')
+    .on('click', (ev, d) => toggleJob(d.job))
     .on('pointermove', (ev, d) => showTip(tip, wrap.node(), ev, [d.job, fmt(d.hours, 'dec') + ' h, ' + fmt(d.share, 'pct'), d.people + ' people, ' + d.shifts + ' shifts']))
     .on('pointerleave', () => tip.attr('hidden', ''));
   svg.append('g').selectAll('text').data(rows).join('text').attr('class', 'mb-lbl').attr('x', (d) => x(d.hours) + 6).attr('y', (d) => y(d.job) + y.bandwidth() / 2).attr('dy', '0.35em').text((d) => fmt(d.hours, 'int') + ' h');
@@ -257,6 +339,31 @@ dash.draw('chart_hour', (el) => {
   const tip = wrap.append('div').attr('class', 'mb-tip').attr('hidden', '');
   svg.append('g').selectAll('rect').data(hrs).join('rect').attr('x', (d) => x(d.hour) - 1).attr('width', x.bandwidth() + 2).attr('y', m.t).attr('height', H - m.t - m.b).style('fill', 'transparent')
     .on('pointermove', (ev, d) => showTip(tip, wrap.node(), ev, [hourLabel(d.hour) + ' to ' + hourLabel((d.hour + 1) % 24), d3.format(',.1f')(d.total) + ' people', ...jobs.filter((j) => d[j] >= 0.05).map((j) => j + ' ' + d3.format(',.1f')(d[j]))]))
+    .on('pointerleave', () => tip.attr('hidden', ''));
+});
+
+dash.draw('jobname', (el) => {
+  el.textContent = dash.params().job || 'none picked';
+});
+dash.draw('chart_jobhour', (el) => {
+  const job = dash.params().job || '';
+  const rows = rowsOf('job_hours');
+  if (!job) { el.textContent = 'Pick a job above to see its staff per hour.'; return; }
+  if (!rows || !rows.length) { el.textContent = '—'; return; }
+  const wrap = box(el, []);
+  const W = el.clientWidth || 320; const H = 150; const m = {t: 16, r: 6, b: 20, l: 30};
+  const svg = wrap.append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Average ' + job + ' staff on the clock by hour of day');
+  const x = d3.scaleBand().domain(d3.range(24)).range([m.l, W - m.r]).padding(0.15);
+  const mx = d3.max(rows, (r) => r.people) || 0;
+  const y = d3.scaleLinear().domain([0, mx * 1.1 || 1]).nice().range([H - m.b, m.t]);
+  svg.append('g').attr('class', 'mb-axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(3).tickSize(-(W - m.l - m.r)).tickFormat(d3.format(',.1~f'))).select('.domain').remove();
+  svg.append('g').attr('class', 'mb-axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickValues(d3.range(0, 24, 3)).tickFormat(hourLabel).tickSize(0)).select('.domain').remove();
+  const peak = rows.reduce((a, r) => r.people > a.people ? r : a, rows[0]);
+  const tip = wrap.append('div').attr('class', 'mb-tip').attr('hidden', '');
+  svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (d) => x(d.hour)).attr('width', x.bandwidth()).attr('y', (d) => y(d.people)).attr('height', (d) => Math.max(0, y(0) - y(d.people))).attr('rx', 2).style('fill', dash.colors[0]);
+  if (mx > 0) svg.append('text').attr('class', 'mb-lbl').attr('text-anchor', 'middle').attr('x', x(peak.hour) + x.bandwidth() / 2).attr('y', y(peak.people) - 4).text(d3.format(',.1f')(peak.people));
+  svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (d) => x(d.hour) - 1).attr('width', x.bandwidth() + 2).attr('y', m.t).attr('height', H - m.t - m.b).style('fill', 'transparent')
+    .on('pointermove', (ev, d) => showTip(tip, wrap.node(), ev, [hourLabel(d.hour) + ' to ' + hourLabel((d.hour + 1) % 24), job, d3.format(',.1f')(d.people) + ' people']))
     .on('pointerleave', () => tip.attr('hidden', ''));
 });
 
@@ -306,6 +413,20 @@ dash.draw('rows', (el) => fillRows(el, null));
 dash.draw('rows_people', (el) => fillRows(el, {
   1: (td, r) => pick(td, r.override || '', jobNames(), 'Position job (' + r.pos_job + ')', (v) => save('person_job', slug(r.employee), {employee: r.employee, job: v}))
 }));
+dash.draw('rows_rates', (el) => fillRows(el, {
+  1: (td, r) => {
+    const inp = document.createElement('input');
+    inp.type = 'number'; inp.min = '0'; inp.step = '0.25'; inp.placeholder = 'Set rate';
+    inp.setAttribute('aria-label', 'Hourly rate for ' + r.job);
+    inp.value = r.rate == null ? '' : r.rate;
+    inp.addEventListener('change', () => {
+      const v = inp.value.trim();
+      save('job_rate', slug(r.job), {job: r.job, rate: v === '' ? '' : +v});
+    });
+    td.classList.add('mb-n');
+    td.appendChild(inp);
+  }
+}));
 dash.draw('rows_positions', (el) => fillRows(el, {
   2: (td, r) => pick(td, r.job, jobNames(), null, (v) => save('job_map', slug(r.position), {position: r.position, job: v}))
 }));
@@ -324,6 +445,13 @@ tabBtns.forEach((t) => t.addEventListener('click', () => openTab(t.dataset.tab))
 const startTab = (location.hash || '').replace('#', '');
 if (tabBtns.some((t) => t.dataset.tab === startTab) && startTab !== 'overview') openTab(startTab);
 
+const jobsTbl = document.getElementById('table-jobs');
+if (jobsTbl) {
+  jobsTbl.addEventListener('click', (e) => {
+    const tr = e.target.closest('tr[data-key]');
+    if (tr) toggleJob(decodeURIComponent(tr.dataset.key));
+  });
+}
 const smonth = document.getElementById('table-smonth');
 if (smonth) {
   smonth.addEventListener('click', (e) => {

@@ -1,6 +1,6 @@
-# Sana staffing dashboard
+# Sana Staffing + Labour
 
-Source for the "Sana staffing: hours, jobs and people (Push)" dashboard, a Claude Data artifact.
+Source for the "Sana Staffing + Labour" dashboard, a Claude Data artifact.
 
 - `index.html`, `page.js`: the page (tabs, charts, tables, calcs).
 - `datasets.json`: dataset documents (`dash/meta`, `dash/params`, `datasets/*`).
@@ -20,4 +20,4 @@ Source for the "Sana staffing: hours, jobs and people (Push)" dashboard, a Claud
 2. Seed `data/staffing/{jobs,job_map,venue_map}/<slug>` from `seed.json`. The slug is the lowercased name with non-alphanumerics collapsed to `-`.
 3. Write `index.html` to `files/index.html` and `page.js` to `files/page.js`.
 
-Sana is the Wellness department, Kitchen is FOH, BOH and BOH Salary, Management is Shared. Hours are after breaks. No dollar figures yet: Push's labour reports are hours only.
+Sana is the Wellness department, Kitchen is FOH, BOH and BOH Salary, Management is Shared. Hours are after breaks. Dollar figures are estimates: hours times hourly rates typed per job on the Jobs tab (`data/staffing/job_rate`), since Push's labour reports are hours only. Percent of sales and of service use Sana's Trybe net and day-pass sales (`data/sales_month.json`, git-ignored with the other data files).

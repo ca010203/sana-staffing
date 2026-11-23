@@ -1,18 +1,74 @@
 {
-  "dash/meta": {"title": "Sana staffing: hours, jobs and people"},
-  "dash/params": {"venue": "All", "month": "All"},
+  "dash/meta": {
+    "title": "Sana Staffing + Labour"
+  },
+  "dash/params": {
+    "venue": "All",
+    "month": "All"
+  },
   "datasets/staff_month": {
     "title": "Clocked and scheduled hours by person",
     "description": "Push clock and schedule reports, one row per employee, position and month.",
-    "source": {"kind": "file", "url": "<upload data/staff_month.json, put its /_blob/ url here>", "name": "staff_month.json", "format": "json"}
+    "source": {
+      "kind": "file",
+      "url": "<upload data/staff_month.json, put its /_blob/ url here>",
+      "name": "staff_month.json",
+      "format": "json"
+    }
   },
   "datasets/hours_by_hour": {
     "title": "Clocked hours by hour of day",
     "description": "Push clock hours split across each hour of the day, per month, department and position.",
-    "source": {"kind": "file", "url": "<upload data/hours_by_hour.json, put its /_blob/ url here>", "name": "hours_by_hour.json", "format": "json"}
+    "source": {
+      "kind": "file",
+      "url": "<upload data/hours_by_hour.json, put its /_blob/ url here>",
+      "name": "hours_by_hour.json",
+      "format": "json"
+    }
   },
-  "datasets/job_map": {"title": "Push position to job", "source": {"kind": "store", "path": "data/staffing/job_map"}},
-  "datasets/person_job": {"title": "Job set per person", "source": {"kind": "store", "path": "data/staffing/person_job"}},
-  "datasets/venue_map": {"title": "Push department to Sana or Kitchen", "source": {"kind": "store", "path": "data/staffing/venue_map"}},
-  "datasets/jobs": {"title": "Job list", "source": {"kind": "store", "path": "data/staffing/jobs"}}
+  "datasets/job_map": {
+    "title": "Push position to job",
+    "source": {
+      "kind": "store",
+      "path": "data/staffing/job_map"
+    }
+  },
+  "datasets/person_job": {
+    "title": "Job set per person",
+    "source": {
+      "kind": "store",
+      "path": "data/staffing/person_job"
+    }
+  },
+  "datasets/venue_map": {
+    "title": "Push department to Sana or Kitchen",
+    "source": {
+      "kind": "store",
+      "path": "data/staffing/venue_map"
+    }
+  },
+  "datasets/jobs": {
+    "title": "Job list",
+    "source": {
+      "kind": "store",
+      "path": "data/staffing/jobs"
+    }
+  },
+  "datasets/job_rate": {
+    "title": "Hourly rate per job",
+    "source": {
+      "kind": "store",
+      "path": "data/staffing/job_rate"
+    }
+  },
+  "datasets/sales_month": {
+    "title": "Sana net sales by month (Trybe)",
+    "description": "Monthly net, day-pass and other sales at Sana from the Trybe dashboard.",
+    "source": {
+      "kind": "file",
+      "url": "<upload data/sales_month.json, put its /_blob/ url here>",
+      "name": "sales_month.json",
+      "format": "json"
+    }
+  }
 }
